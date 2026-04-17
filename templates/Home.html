@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study Finder - Welcome & Sign In</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="auth-panel">
+      <div class="brand">
+        <div class="brand-icon"></div>
+        <span>StudySpot</span>
+      </div>
+
+      <div class="auth-content">
+        <h1>Welcome back</h1>
+        <p class="subtitle">Find your next study spot. Sign in to continue.</p>
+
+        <form class="login-form">
+          <label for="email">EMAIL ADDRESS</label>
+          <div class="input-wrap">
+            <span class="input-icon">✉</span>
+            <input id="email" type="email" placeholder="student@university.edu" />
+          </div>
+
+          <div class="password-row">
+            <label for="password">PASSWORD</label>
+            <a href="#">Forgot password?</a>
+          </div>
+
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input id="password" type="password" placeholder="••••••••" />
+            <button type="button" class="eye-btn" id="togglePassword">👁</button>
+          </div>
+
+          <button type="submit" class="primary-btn">Sign in</button>
+        </form>
+
+        <div class="divider">OR CONTINUE WITH</div>
+
+        <div class="social-buttons">
+          <button class="social-btn">
+            <span class="google-dot">G</span>
+            Google
+          </button>
+          <button class="social-btn">
+            <span class="apple-dot"></span>
+            Apple
+          </button>
+        </div>
+
+        <p class="signup-text">
+          Don't have an account?
+          <a href="#">Create an account</a>
+        </p>
+      </div>
+
+      <footer class="footer-links">
+        <span>© 2024 STUDYSPOT INC.</span>
+        <a href="#">TERMS</a>
+        <a href="#">PRIVACY</a>
+      </footer>
+    </section>
+
+    <section class="showcase-panel">
+      <div class="showcase-card">
+        <div class="image-frame">
+          <img src="study-room.jpg" alt="Study room" />
+        </div>
+
+        <div class="showcase-text">
+          <h2>Discover your perfect environment</h2>
+          <p>
+            Filter by WiFi speed, noise level, and available outlets to find
+            the exact spot you need to focus and ace your next exam.
+          </p>
+        </div>
+
+        <div class="feature-tags">
+          <span>Fast WiFi</span>
+          <span>Quiet Zones</span>
+          <span>Power Outlets</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
