@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudySpot - Owner Dashboard</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #efedf3;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 800px;
+      max-width: 100%;
+      background: #f8f6fb;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      text-align: center;
+    }
+
+    h1 {
+      color: #a78bfa;
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #777;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    .flash-message {
+      background: #ffe0e0;
+      color: #900;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      display: block;
+      text-decoration: none;
+      background: #b49bf2;
+      color: white;
+      padding: 18px;
+      border-radius: 15px;
+      font-size: 18px;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      background: #9f7df0;
+    }
+
+    @media (max-width: 700px) {
+      .buttons {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Owner Dashboard</h1>
+    <p class="subtitle">Manage your places and requests from one page.</p>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="flash-message">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="buttons">
+      <a href="{{ url_for('add_place') }}" class="btn">Add Place</a>
+      <a href="{{ url_for('my_places') }}" class="btn">My Places</a>
+      <a href="#" class="btn">View Ratings</a>
+      <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+    </div>
+  </div>
+
+</body>
+</html>

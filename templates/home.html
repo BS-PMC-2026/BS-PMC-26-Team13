@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudySpot - Home</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #efedf3;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 700px;
+      background: #f8f6fb;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .brand {
+      color: #b49bf2;
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      font-size: 48px;
+      color: #a78bfa;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #aaa;
+      margin-bottom: 40px;
+      font-size: 16px;
+    }
+
+    .home-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .home-btn {
+      display: block;
+      width: 100%;
+      max-width: 400px;
+      text-decoration: none;
+      background: #b49bf2;
+      color: white;
+      padding: 16px;
+      border-radius: 18px;
+      font-size: 18px;
+      font-weight: 600;
+      transition: 0.2s;
+      box-shadow: 0 8px 18px rgba(180,155,242,0.3);
+    }
+
+    .home-btn:hover {
+      background: #9f7df0;
+      transform: translateY(-2px);
+    }
+
+    .footer {
+      margin-top: 40px;
+      font-size: 13px;
+      color: gray;
+    }
+
+    .footer a {
+      color: gray;
+      text-decoration: none;
+      margin-left: 10px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="page">
+
+    <div class="brand">StudySpot</div>
+
+    <h1>Welcome to StudySpot</h1>
+    <p class="subtitle">Choose how you want to continue</p>
+
+    <div class="home-buttons">
+      <a href="{{ url_for('login_student') }}" class="home-btn">Continue as Student</a>
+      <a href="{{ url_for('login_owner') }}" class="home-btn">Continue as Place Owner</a>
+      <a href="{{ url_for('login_admin') }}" class="home-btn">Continue as Admin</a>
+    </div>
+
+    <div class="footer">
+      © 2026 STUDYSPOT
+      <a href="#">TERMS</a>
+      <a href="#">PRIVACY</a>
+    </div>
+
+  </div>
+
+</body>
+</html>
