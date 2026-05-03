@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudySpot - Admin Requests</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #efedf3;
+      min-height: 100vh;
+      padding: 30px;
+    }
+
+    .container {
+      width: 1100px;
+      max-width: 100%;
+      margin: auto;
+      background: #f8f6fb;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      padding: 35px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    }
+
+    h1 {
+      color: #a78bfa;
+      font-size: 42px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .subtitle {
+      color: #777;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    .top-actions {
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      padding: 10px 16px;
+      border-radius: 12px;
+      color: white;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .back-btn {
+      background: #b49bf2;
+    }
+
+    .back-btn:hover {
+      background: #9f7df0;
+    }
+
+    .approve {
+      background: #28a745;
+    }
+
+    .reject {
+      background: #dc3545;
+    }
+
+    .return {
+      background: #17a2b8;
+    }
+
+    .requests-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #e5e5e5;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+
+    .card h2 {
+      color: #6c63ff;
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      color: #555;
+      font-size: 14px;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .status {
+      display: inline-block;
+      margin-top: 8px;
+      margin-bottom: 12px;
+      padding: 7px 12px;
+      border-radius: 12px;
+      background: #fff3cd;
+      color: #856404;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    .empty {
+      text-align: center;
+      color: #777;
+      font-size: 18px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Manage Requests</h1>
+    <p class="subtitle">Review pending places and decide whether to approve, reject, or return them for edit.</p>
+
+    <div class="top-actions">
+      <a href="{{ url_for('admin_dashboard') }}" class="btn back-btn">Back to Dashboard</a>
+      <a href="{{ url_for('logout') }}" class="btn back-btn">Logout</a>
+    </div>
+
+    {% if places %}
+      <div class="requests-grid">
+        {% for place in places %}
+          <div class="card">
+            <h2>{{ place.name }}</h2>
+
+            <p><strong>Description:</strong> {{ place.description or 'No description' }}</p>
+            <p><strong>Area:</strong> {{ place.area }}</p>
+            <p><strong>Type:</strong> {{ place.service_type }}</p>
+            <p><strong>Opening Hours:</strong> {{ place.opening_hours or 'Not specified' }}</p>
+            <p><strong>WiFi:</strong> {{ 'Yes' if place.wifi else 'No' }}</p>
+            <p><strong>Printer:</strong> {{ 'Yes' if place.printer else 'No' }}</p>
+            <p><strong>Latitude:</strong> {{ place.latitude }}</p>
+            <p><strong>Longitude:</strong> {{ place.longitude }}</p>
+            <p><strong>Owner ID:</strong> {{ place.owner_id }}</p>
+
+            <span class="status">{{ place.status }}</span>
+
+            <div class="actions">
+              <a href="{{ url_for('approve_place', place_id=place.id) }}" class="btn approve">Approve</a>
+              <a href="{{ url_for('reject_place', place_id=place.id) }}" class="btn reject">Reject</a>
+              <a href="{{ url_for('return_place', place_id=place.id) }}" class="btn return">Return for Edit</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty">No pending requests at the moment.</p>
+    {% endif %}
+  </div>
+
+</body>
+</html>
