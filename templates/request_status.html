@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>StudySpot - Request Status</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #efedf3;
+      min-height: 100vh;
+      padding: 30px;
+    }
+
+    .container {
+      width: 1000px;
+      max-width: 100%;
+      margin: auto;
+      background: #f8f6fb;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      padding: 35px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    }
+
+    h1 {
+      color: #a78bfa;
+      font-size: 42px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #777;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    .top-actions {
+      margin-bottom: 25px;
+    }
+
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      background: #b49bf2;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 16px;
+    }
+
+    .btn:hover {
+      background: #9f7df0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 14px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+      font-size: 15px;
+    }
+
+    th {
+      background: #b49bf2;
+      color: white;
+    }
+
+    .status {
+      padding: 7px 12px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 13px;
+      display: inline-block;
+    }
+
+    .pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .approved {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .rejected {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .returned_for_edit {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+
+    .empty {
+      text-align: center;
+      color: #777;
+      font-size: 18px;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Request Status</h1>
+    <p class="subtitle">Track the approval status of your submitted places.</p>
+
+    <div class="top-actions">
+      <a href="{{ url_for('owner_dashboard') }}" class="btn">Back to Dashboard</a>
+    </div>
+
+    {% if places %}
+      <table>
+        <thead>
+          <tr>
+            <th>Place Name</th>
+            <th>Area</th>
+            <th>Type</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for place in places %}
+            <tr>
+              <td>{{ place.name }}</td>
+              <td>{{ place.area }}</td>
+              <td>{{ place.service_type }}</td>
+              <td>
+                <span class="status {{ place.status }}">
+                  {{ place.status.replace('_', ' ').title() }}
+                </span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty">You have not submitted any places yet.</p>
+    {% endif %}
+  </div>
+
+</body>
+</html>
