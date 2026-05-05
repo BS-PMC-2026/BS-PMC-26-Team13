@@ -1,56 +1,3 @@
-""" from flask import Flask, render_template
-from flask_login import LoginManager
-from models import db, User
-
-app = Flask(__name__)
-
-app.config['SECRET_KEY'] = 'my_secret_key_123'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///study_services.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db.init_app(app)
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
-
-@app.route("/")
-def home():
-    return render_template("home.html")
-
-
-@app.route("/login/student")
-def login_student():
-    return render_template("login_student.html")
-
-@app.route("/register/student")
-def register_student():
-    return render_template("register_student.html")
-
-@app.route("/login/owner")
-def login_owner():
-    return render_template("login_owner.html")
-
-
-@app.route("/register/owner")
-def register_owner():
-    return render_template("register_owner.html")
-
-@app.route("/login/admin")
-def login_admin():
-    return render_template("login_admin.html")
-
-
-if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True) """
-
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -171,7 +118,6 @@ def login_student():
 
         if user and check_password_hash(user.password_hash, password):
             login_user(user)
-            flash('Student login successful.')
             return redirect(url_for('student_dashboard'))
         else:
             flash('Invalid student email or password.')
@@ -194,9 +140,39 @@ def view_map():
         flash('Unauthorized access.')
         return redirect(url_for('home'))
 
-    places = Place.query.filter_by(status='approved').all()
-    return render_template('view_map.html', places=places)
+    selected_area = request.args.get('area')
 
+    all_areas = db.session.query(Place.area).filter_by(status='approved').distinct().all()
+    areas = [area[0] for area in all_areas]
+
+    query = Place.query.filter_by(status='approved')
+
+    if selected_area and selected_area != 'all':
+        query = query.filter_by(area=selected_area)
+
+    places = query.all()
+
+    places_data = []
+    for place in places:
+        places_data.append({
+            'name': place.name,
+            'description': place.description or 'No description',
+            'area': place.area,
+            'service_type': place.service_type,
+            'opening_hours': place.opening_hours or 'Not specified',
+            'wifi': 'Yes' if place.wifi else 'No',
+            'printer': 'Yes' if place.printer else 'No',
+            'latitude': place.latitude,
+            'longitude': place.longitude
+        })
+
+    return render_template(
+        'view_map.html',
+        places=places,
+        places_data=places_data,
+        areas=areas,
+        selected_area=selected_area
+    )
 
 @app.route('/login_owner', methods=['GET', 'POST'])
 def login_owner():
@@ -208,13 +184,91 @@ def login_owner():
 
         if user and check_password_hash(user.password_hash, password):
             login_user(user)
-            flash('Owner login successful.')
             return redirect(url_for('owner_dashboard'))
         else:
             flash('Invalid owner email or password.')
 
     return render_template('login_owner.html')
 
+@app.route('/edit_place/<int:place_id>', methods=['GET', 'POST'])
+@login_required
+def edit_place(place_id):
+    if current_user.role != 'owner':
+        flash('Unauthorized access.')
+        return redirect(url_for('home'))
+
+    place = Place.query.get_or_404(place_id)
+
+    if place.owner_id != current_user.id:
+        flash('You can edit only your own places.')
+        return redirect(url_for('my_places'))
+
+    if request.method == 'POST':
+        place.name = request.form['name']
+        place.description = request.form['description']
+        place.area = request.form['area']
+        place.service_type = request.form['service_type']
+        place.opening_hours = request.form['opening_hours']
+        place.latitude = float(request.form['latitude'])
+        place.longitude = float(request.form['longitude'])
+        place.wifi = True if request.form.get('wifi') == 'on' else False
+        place.printer = True if request.form.get('printer') == 'on' else False
+
+        place.status = 'pending'
+
+        db.session.commit()
+        return redirect(url_for('my_places'))
+
+    return render_template('edit_place.html', place=place)
+
+
+@app.route('/delete_place/<int:place_id>')
+@login_required
+def delete_place(place_id):
+    if current_user.role != 'owner':
+        flash('Unauthorized access.')
+        return redirect(url_for('home'))
+
+    place = Place.query.get_or_404(place_id)
+
+    if place.owner_id != current_user.id:
+        flash('You can delete only your own places.')
+        return redirect(url_for('my_places'))
+
+    db.session.delete(place)
+    db.session.commit()
+
+    return redirect(url_for('my_places'))
+
+
+@app.route('/submit_request/<int:place_id>')
+@login_required
+def submit_request(place_id):
+    if current_user.role != 'owner':
+        flash('Unauthorized access.')
+        return redirect(url_for('home'))
+
+    place = Place.query.get_or_404(place_id)
+
+    if place.owner_id != current_user.id:
+        flash('Unauthorized access.')
+        return redirect(url_for('my_places'))
+
+    place.status = 'pending'
+    db.session.commit()
+
+    return redirect(url_for('request_status'))
+
+
+@app.route('/request_status')
+@login_required
+def request_status():
+    if current_user.role != 'owner':
+        flash('Unauthorized access.')
+        return redirect(url_for('home'))
+
+    places = Place.query.filter_by(owner_id=current_user.id).all()
+    return render_template('request_status.html', places=places)
 
 @app.route('/login_admin', methods=['GET', 'POST'])
 def login_admin():
@@ -226,12 +280,12 @@ def login_admin():
 
         if user and check_password_hash(user.password_hash, password):
             login_user(user)
-            flash('Admin login successful.')
             return redirect(url_for('admin_dashboard'))
         else:
             flash('Invalid admin email or password.')
 
     return render_template('login_admin.html')
+
 
 @app.route('/admin_dashboard')
 @login_required
@@ -241,6 +295,58 @@ def admin_dashboard():
         return redirect(url_for('home'))
 
     return render_template('admin_dashboard.html')
+
+@app.route('/admin_requests')
+@login_required
+def admin_requests():
+    if current_user.role != 'admin':
+        flash('Unauthorized access.')
+        return redirect(url_for('home'))
+
+    pending_places = Place.query.filter_by(status='pending').all()
+    return render_template('admin_requests.html', places=pending_places)
+
+
+@app.route('/approve_place/<int:place_id>')
+@login_required
+def approve_place(place_id):
+    if current_user.role != 'admin':
+        flash('Unauthorized access.')
+        return redirect(url_for('home'))
+
+    place = Place.query.get_or_404(place_id)
+    place.status = 'approved'
+    db.session.commit()
+
+    return redirect(url_for('admin_requests'))
+
+
+@app.route('/reject_place/<int:place_id>')
+@login_required
+def reject_place(place_id):
+    if current_user.role != 'admin':
+        flash('Unauthorized access.')
+        return redirect(url_for('home'))
+
+    place = Place.query.get_or_404(place_id)
+    place.status = 'rejected'
+    db.session.commit()
+
+    return redirect(url_for('admin_requests'))
+
+
+@app.route('/return_place/<int:place_id>')
+@login_required
+def return_place(place_id):
+    if current_user.role != 'admin':
+        flash('Unauthorized access.')
+        return redirect(url_for('home'))
+
+    place = Place.query.get_or_404(place_id)
+    place.status = 'returned_for_edit'
+    db.session.commit()
+
+    return redirect(url_for('admin_requests'))
 
 @app.route('/add_place', methods=['GET', 'POST'])
 @login_required
@@ -307,9 +413,7 @@ def my_places():
 @login_required
 def logout():
     logout_user()
-    flash('Logged out successfully.')
     return redirect(url_for('home'))
-
 
 
 if __name__ == '__main__':
