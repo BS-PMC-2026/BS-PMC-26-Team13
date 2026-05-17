@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudySpot - Login</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #ecf0f1;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: #2c3e50;
+    }
+
+    .page {
+      display: flex;
+      width: 1000px;
+      max-width: 100%;
+      min-height: 650px;
+      background: #ecf0f1;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 14px 35px rgba(44, 62, 80, 0.18);
+      border: 1px solid rgba(44, 62, 80, 0.08);
+    }
+
+    .auth-panel {
+      width: 50%;
+      padding: 42px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: #ecf0f1;
+    }
+
+    .brand {
+      color: #2c3e50;
+      font-weight: bold;
+      font-size: 22px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .auth-content h1 {
+      font-size: 56px;
+      color: #2c3e50;
+      margin-bottom: 10px;
+      text-align: center;
+      line-height: 1.05;
+    }
+
+    .subtitle {
+      color: #7f8c8d;
+      margin-bottom: 30px;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      font-size: 14px;
+      color: #2c3e50;
+    }
+
+    .input-wrap {
+      position: relative;
+      margin-bottom: 18px;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      padding: 14px 42px;
+      border-radius: 14px;
+      border: 1px solid #2c3e50;
+      font-size: 16px;
+      background: white;
+      color: #2c3e50;
+      outline: none;
+    }
+
+    .input-wrap input:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.18);
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+    }
+
+    .password-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .password-row a {
+      font-size: 14px;
+      color: #3498db;
+      text-decoration: none;
+    }
+
+    .password-row a:hover {
+      color: #2980b9;
+    }
+
+    .primary-btn {
+      width: 60%;
+      display: block;
+      margin: 22px auto 0;
+      padding: 14px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 17px;
+      transition: 0.2s;
+    }
+
+    .primary-btn:hover {
+      background: #2980b9;
+    }
+
+    .signup-text {
+      margin-top: 22px;
+      font-size: 16px;
+      text-align: center;
+      color: #7f8c8d;
+    }
+
+    .signup-text a {
+      color: #2c3e50;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .signup-text a:hover {
+      color: #3498db;
+    }
+
+    .footer-links {
+      font-size: 12px;
+      color: #7f8c8d;
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .footer-links a {
+      color: #7f8c8d;
+      text-decoration: none;
+      margin-left: 10px;
+    }
+
+    .showcase-panel {
+      width: 50%;
+      background: #ecf0f1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 35px;
+      border-left: 1px solid rgba(44, 62, 80, 0.08);
+    }
+
+    .showcase-card {
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+
+    .image-frame {
+      width: 100%;
+      margin-bottom: 35px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: white;
+      border: 2px solid #2c3e50;
+      box-shadow: 0 8px 20px rgba(44, 62, 80, 0.12);
+    }
+
+    .image-frame img {
+      display: block;
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+    }
+
+    .showcase-card h2 {
+      font-size: 40px;
+      margin-bottom: 14px;
+      line-height: 1.1;
+      color: #2c3e50;
+    }
+
+    .showcase-card p {
+      font-size: 17px;
+      color: #2c3e50;
+      margin-bottom: 24px;
+      line-height: 1.35;
+    }
+
+    .feature-tags span {
+      display: inline-block;
+      background: #2c3e50;
+      color: white;
+      border-radius: 16px;
+      padding: 8px 18px;
+      margin: 5px;
+      font-size: 14px;
+    }
+
+    .flash-message {
+      background: #fcebea;
+      color: #e74c3c;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      border: 1px solid rgba(231, 76, 60, 0.3);
+    }
+
+    @media (max-width: 900px) {
+      .page {
+        flex-direction: column;
+      }
+
+      .auth-panel,
+      .showcase-panel {
+        width: 100%;
+      }
+
+      .showcase-panel {
+        border-left: none;
+        border-top: 1px solid rgba(44, 62, 80, 0.08);
+      }
+
+      .auth-content h1 {
+        font-size: 42px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="page">
+
+    <section class="auth-panel">
+      <div class="brand">StudySpot</div>
+
+      <div class="auth-content">
+        <h1>Welcome back</h1>
+        <p class="subtitle">Sign in and we will send you to the right dashboard.</p>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div class="flash-message">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+
+          <label>EMAIL</label>
+          <div class="input-wrap">
+            <span class="input-icon">✉</span>
+            <input type="email" name="email" placeholder="your@email.com" required>
+          </div>
+
+          <div class="password-row">
+            <label>PASSWORD</label>
+            <a href="#">Forgot password?</a>
+          </div>
+
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" name="password" placeholder="••••••••" required>
+          </div>
+
+          <button type="submit" class="primary-btn">Sign in</button>
+
+        </form>
+
+        <p class="signup-text">
+          Don't have an account?
+          <a href="{{ url_for('register') }}">Create an account</a>
+        </p>
+      </div>
+
+      <div class="footer-links">
+        © 2026 STUDYSPOT
+        <a href="#">TERMS</a>
+        <a href="#">PRIVACY</a>
+      </div>
+    </section>
+
+    <section class="showcase-panel">
+      <div class="showcase-card">
+        <div class="image-frame">
+          <img src="{{ url_for('static', filename='images/pic.jpg') }}" alt="Study room">
+        </div>
+
+        <h2>Find your next study spot</h2>
+        <p>
+          One login page for students, place owners and system administrators.
+        </p>
+
+        <div class="feature-tags">
+          <span>Student</span>
+          <span>Owner</span>
+          <span>Admin</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+</body>
+</html>
