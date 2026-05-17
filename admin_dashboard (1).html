@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudySpot - Admin Dashboard</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #ecf0f1;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: #2c3e50;
+    }
+
+    .container {
+      position: relative;
+      width: 900px;
+      max-width: 100%;
+      background: #ecf0f1;
+      border-radius: 22px;
+      padding: 55px 40px;
+      box-shadow: 0 14px 35px rgba(44, 62, 80, 0.18);
+      border: 1px solid rgba(44, 62, 80, 0.08);
+      text-align: center;
+    }
+
+    /* زر Logout بالأعلى على اليمين */
+    .logout-btn {
+      position: absolute;
+      top: 25px;
+      right: 25px;
+      text-decoration: none;
+      background: #e74c3c;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: bold;
+      transition: 0.2s;
+      box-shadow: 0 4px 10px rgba(231, 76, 60, 0.25);
+    }
+
+    .logout-btn:hover {
+      background: #c0392b;
+    }
+
+    .brand {
+      color: #2c3e50;
+      font-weight: bold;
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      color: #2c3e50;
+      font-size: 72px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      line-height: 1.05;
+    }
+
+    .subtitle {
+      color: #7f8c8d;
+      margin-bottom: 40px;
+      font-size: 18px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 25px;
+    }
+
+    .btn {
+      display: block;
+      text-decoration: none;
+      background: #3498db;
+      color: white;
+      padding: 16px 20px;
+      border-radius: 14px;
+      font-size: 18px;
+      font-weight: bold;
+      transition: 0.2s;
+      box-shadow: 0 6px 15px rgba(52, 152, 219, 0.20);
+    }
+
+    .btn:hover {
+      background: #2980b9;
+      transform: translateY(-2px);
+    }
+
+    /* أزرار بلون داكن */
+    .dark-btn {
+      background: #2c3e50;
+    }
+
+    .dark-btn:hover {
+      background: #1f2d3a;
+    }
+
+    @media (max-width: 700px) {
+      .buttons {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 42px;
+      }
+
+      .logout-btn {
+        position: static;
+        display: inline-block;
+        margin-bottom: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+
+    <div class="brand">StudySpot</div>
+
+    <h1>Admin Dashboard</h1>
+    <p class="subtitle">Manage system data and user requests.</p>
+
+    <div class="buttons">
+      <a href="{{ url_for('admin_requests') }}" class="btn">Manage Requests</a>
+      <a href="#" class="btn">View All Places</a>
+      <a href="#" class="btn dark-btn">Users</a>
+      <a href="{{ url_for('home') }}" class="btn dark-btn">Home</a>
+    </div>
+
+  </div>
+
+</body>
+</html>
