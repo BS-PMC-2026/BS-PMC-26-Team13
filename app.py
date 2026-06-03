@@ -2,7 +2,12 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+<<<<<<< HEAD
 import urllib.parse
+=======
+import os
+from werkzeug.utils import secure_filename
+>>>>>>> d40787a (Changed image handling to use URLs)
 from models import db, User, Place, PlaceImage, Message, Rating
 
 app = Flask(__name__)
@@ -27,6 +32,7 @@ else:
     params = urllib.parse.quote_plus(connection_string)
     app.config['SQLALCHEMY_DATABASE_URI'] = f"mssql+pyodbc:///?odbc_connect={params}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 db.init_app(app)
 
@@ -68,7 +74,10 @@ def create_admin():
 def home():
     return redirect(url_for('register'))
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> d40787a (Changed image handling to use URLs)
 # =========================
 # Unified Register
 # =========================
@@ -131,6 +140,7 @@ def login():
 
     return render_template('login.html')
 
+<<<<<<< HEAD
 @app.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
@@ -160,6 +170,8 @@ def forgot_password():
 
     return render_template('forgot_password.html')
 
+=======
+>>>>>>> d40787a (Changed image handling to use URLs)
 
 # =========================
 # Student Pages
@@ -215,10 +227,17 @@ def view_map():
         selected_area=selected_area
     )
 
+<<<<<<< HEAD
 
 @app.route('/rate_place/<int:place_id>', methods=['POST'])
 @login_required
 def rate_place(place_id):
+=======
+@app.route('/rate_place/<int:place_id>', methods=['POST'])
+@login_required
+def rate_place(place_id):
+
+>>>>>>> d40787a (Changed image handling to use URLs)
     if current_user.role != 'student':
         flash('Only students can rate places.')
         return redirect(url_for('home'))
@@ -236,6 +255,10 @@ def rate_place(place_id):
     if existing_rating:
         existing_rating.score = score
         existing_rating.comment = comment
+<<<<<<< HEAD
+=======
+
+>>>>>>> d40787a (Changed image handling to use URLs)
     else:
         new_rating = Rating(
             student_id=current_user.id,
@@ -243,6 +266,10 @@ def rate_place(place_id):
             score=score,
             comment=comment
         )
+<<<<<<< HEAD
+=======
+
+>>>>>>> d40787a (Changed image handling to use URLs)
         db.session.add(new_rating)
 
     db.session.commit()
@@ -281,6 +308,7 @@ def add_place():
 
         wifi = True if request.form.get('wifi') == 'on' else False
         printer = True if request.form.get('printer') == 'on' else False
+<<<<<<< HEAD
 
         new_place = Place(
             name=name,
@@ -324,6 +352,59 @@ def my_places():
 
     places = Place.query.filter_by(owner_id=current_user.id).all()
     return render_template('my_places.html', places=places)
+=======
+
+        new_place = Place(
+            name=name,
+            description=description,
+            area=area,
+            service_type=service_type,
+            opening_hours=opening_hours,
+            wifi=wifi,
+            printer=printer,
+            latitude=float(latitude),
+            longitude=float(longitude),
+            owner_id=current_user.id,
+            status='pending'
+        )
+
+        db.session.add(new_place)
+        db.session.commit()
+
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+        images = request.files.getlist('images')
+
+        for image in images:
+            if image and image.filename != '':
+                filename = secure_filename(image.filename)
+                image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                image.save(image_path)
+
+                place_image = PlaceImage(
+                    filename=filename,
+                    place_id=new_place.id
+                )
+
+                db.session.add(place_image)
+
+        db.session.commit()
+
+        return redirect(url_for('owner_dashboard'))
+
+    return render_template('add_place.html')
+
+@app.route('/my_places')
+@login_required
+def my_places():
+    if current_user.role != 'owner':
+        flash('Unauthorized access.')
+        return redirect(url_for('home'))
+
+    places = Place.query.filter_by(owner_id=current_user.id).all()
+    return render_template('my_places.html', places=places)
+
+>>>>>>> d40787a (Changed image handling to use URLs)
 
 
 @app.route('/edit_place/<int:place_id>', methods=['GET', 'POST'])
@@ -416,6 +497,7 @@ def request_status():
     places = Place.query.filter_by(owner_id=current_user.id).all()
     return render_template('request_status.html', places=places)
 
+<<<<<<< HEAD
 
 @app.route('/view_ratings')
 @login_required
@@ -427,7 +509,18 @@ def view_ratings():
     places = Place.query.filter_by(owner_id=current_user.id).all()
 
     return render_template('view_ratings.html', places=places)
+=======
+@app.route('/view_ratings')
+@login_required
+def view_ratings():
+    if current_user.role != 'owner':
+        flash('Unauthorized access.')
+        return redirect(url_for('home'))
 
+    places = Place.query.filter_by(owner_id=current_user.id).all()
+>>>>>>> d40787a (Changed image handling to use URLs)
+
+    return render_template('view_ratings.html', places=places)
 
 # =========================
 # Admin Pages
@@ -451,6 +544,16 @@ def admin_requests():
 
     pending_places = Place.query.filter_by(status='pending').all()
     return render_template('admin_requests.html', places=pending_places)
+
+@app.route('/admin_all_places')
+@login_required
+def admin_all_places():
+    if current_user.role != 'admin':
+        flash('Unauthorized access.')
+        return redirect(url_for('home'))
+
+    places = Place.query.all()
+    return render_template('admin_all_places.html', places=places)
 
 
 @app.route('/admin_all_places')
@@ -505,7 +608,10 @@ def return_place(place_id):
 
     return redirect(url_for('admin_requests'))
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> d40787a (Changed image handling to use URLs)
 @app.route('/chat/<int:place_id>', methods=['GET', 'POST'])
 @login_required
 def chat(place_id):
@@ -560,6 +666,7 @@ def chat(place_id):
         place=place,
         messages=messages
     )
+<<<<<<< HEAD
 
 
 @app.route('/admin_users')
@@ -597,6 +704,8 @@ def delete_user(user_id):
 
     return redirect(url_for('admin_users'))
 
+=======
+>>>>>>> d40787a (Changed image handling to use URLs)
 
 # =========================
 # Logout

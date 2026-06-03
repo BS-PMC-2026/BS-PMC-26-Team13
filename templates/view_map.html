@@ -473,7 +473,12 @@
 
               <div class="place-img">
                 {% if place.images %}
+<<<<<<< HEAD
 <img src="{{ place.images[0].filename }}" alt="{{ place.name }}">                {% else %}
+=======
+                  <img src="{{ url_for('static', filename='uploads/' + place.images[0].filename) }}" alt="{{ place.name }}">
+                {% else %}
+>>>>>>> d40787a (Changed image handling to use URLs)
                   <div class="no-img"></div>
                 {% endif %}
               </div>
@@ -578,6 +583,7 @@
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
+<<<<<<< HEAD
   var places = [
     {% for place in places %}
 {
@@ -599,6 +605,30 @@
 }{% if not loop.last %},{% endif %}
 {% endfor %}
 ];
+=======
+    var places = [
+      {% for place in places %}
+        {
+          id: {{ place.id }},
+          name: {{ place.name|tojson }},
+          description: {{ (place.description or 'No description')|tojson }},
+          area: {{ place.area|tojson }},
+          service_type: {{ place.service_type|tojson }},
+          opening_hours: {{ (place.opening_hours or 'Not specified')|tojson }},
+          wifi: {{ 'true' if place.wifi else 'false' }},
+          printer: {{ 'true' if place.printer else 'false' }},
+          latitude: {{ place.latitude }},
+          longitude: {{ place.longitude }},
+          images: [
+  {% for image in place.images %}
+    {{ url_for('static', filename='uploads/' + image.filename)|tojson }}{% if not loop.last %},{% endif %}
+  {% endfor %}
+]
+        }{% if not loop.last %},{% endif %}
+      {% endfor %}
+    ];
+
+>>>>>>> d40787a (Changed image handling to use URLs)
     var markers = {};
 
     places.forEach(function(place) {
