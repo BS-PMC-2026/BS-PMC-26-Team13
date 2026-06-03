@@ -157,7 +157,7 @@
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-  var places = {{ places_data | tojson }};
+  var places = { places_data , tojson };
 
   places.forEach(function(place) {
     L.marker([place.latitude, place.longitude]).addTo(map)
