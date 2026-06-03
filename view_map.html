@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudySpot - Map</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+  background: #dfe5e8;
+  min-height: 100vh;
+  color: #2c3e50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 35px;
+}
+
+.page {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  width: 1500px;
+  max-width: 100%;
+  height: calc(100vh - 70px);
+  overflow: hidden;
+  background: #ecf0f1;
+  border-radius: 28px;
+  box-shadow: 0 14px 35px rgba(44, 62, 80, 0.18);
+  border: 1px solid rgba(44, 62, 80, 0.10);
+}
+    .sidebar {
+  background: #ecf0f1;
+  padding: 28px 24px;
+  overflow-y: auto;
+  border-right: 1px solid rgba(44, 62, 80, 0.12);
+  z-index: 10;
+}
+
+    .brand {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 18px;
+    }
+
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      gap: 10px;
+    }
+
+    .logout-btn {
+      text-decoration: none;
+      background: #e74c3c;
+      color: white;
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .logout-btn:hover {
+      background: #c0392b;
+    }
+
+    .search-box {
+      position: relative;
+      margin-bottom: 18px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 14px 44px 14px 18px;
+      border-radius: 999px;
+      border: 1px solid #2c3e50;
+      background: white;
+      font-size: 15px;
+      outline: none;
+      color: #2c3e50;
+    }
+
+    .search-box input:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.18);
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: #3498db;
+    }
+
+    .count {
+      color: #7f8c8d;
+      font-size: 14px;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .category-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .category-btn {
+      border: 1px solid #2c3e50;
+      color: #2c3e50;
+      background: white;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .category-btn:hover,
+    .category-btn.active {
+      background: #3498db;
+      border-color: #3498db;
+      color: white;
+    }
+
+    .places-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .place-card {
+      display: flex;
+      gap: 14px;
+      background: white;
+      border: 1px solid #2c3e50;
+      border-radius: 18px;
+      padding: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .place-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(44, 62, 80, 0.12);
+    }
+
+    .place-card.active {
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    .place-img {
+      width: 120px;
+      min-width: 120px;
+      height: 115px;
+      border-radius: 14px;
+      background: #d97777;
+      overflow: hidden;
+    }
+
+    .place-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .no-img {
+      width: 100%;
+      height: 100%;
+      background: #d97777;
+    }
+
+    .place-info h3 {
+      font-size: 18px;
+      margin-bottom: 6px;
+      color: #2c3e50;
+    }
+
+    .place-info p {
+      font-size: 13px;
+      color: #5d6d7e;
+      margin-bottom: 6px;
+      line-height: 1.35;
+    }
+
+    .features {
+      display: flex;
+      gap: 10px;
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .open-now {
+      color: #3498db;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .map-area {
+  position: relative;
+  height: 100%;
+  padding: 28px;
+  background: #ecf0f1;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(44, 62, 80, 0.12);
+  box-shadow: 0 12px 30px rgba(44, 62, 80, 0.12);
+}
+
+    .details-panel {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      width: 330px;
+      background: white;
+      border: 1px solid #2c3e50;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(44, 62, 80, 0.22);
+      padding: 18px;
+      z-index: 999;
+      display: none;
+    }
+
+    .details-panel.show {
+      display: block;
+    }
+
+    .details-panel h2 {
+      font-size: 24px;
+      margin-bottom: 8px;
+      color: #2c3e50;
+    }
+
+    .details-panel p {
+      font-size: 14px;
+      color: #5d6d7e;
+      margin-bottom: 8px;
+      line-height: 1.45;
+    }
+
+    .details-image {
+      width: 100%;
+      height: 150px;
+      border-radius: 14px;
+      background: #d97777;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .details-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .close-details {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      border: none;
+      background: transparent;
+      font-size: 22px;
+      cursor: pointer;
+      color: #2c3e50;
+    }
+
+    .empty {
+      color: #7f8c8d;
+      text-align: center;
+      margin-top: 30px;
+      font-size: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .page {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+
+      .sidebar {
+        height: auto;
+        max-height: none;
+      }
+
+      .map-area {
+        height: 600px;
+      }
+
+      .details-panel {
+        width: calc(100% - 40px);
+        right: 20px;
+        left: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="top-row">
+        <div class="brand">StudySpot</div>
+        <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+      </div>
+
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search for a study place...">
+        <span class="search-icon">🔍</span>
+      </div>
+
+      <div class="count">
+        {{ places|length }} Places · Beersheba
+      </div>
+
+      <div class="category-row">
+        <button class="category-btn active" data-type="all">All</button>
+        <button class="category-btn" data-type="Library">Library</button>
+        <button class="category-btn" data-type="Cafe">Cafe</button>
+        <button class="category-btn" data-type="Study Room">Study Room</button>
+        <button class="category-btn" data-type="Work Space">Work Space</button>
+      </div>
+
+      {% if places %}
+        <div class="places-list" id="placesList">
+          {% for place in places %}
+            <div class="place-card"
+                 data-id="{{ place.id }}"
+                 data-name="{{ place.name|lower }}"
+                 data-type="{{ place.service_type }}"
+                 onclick="selectPlace({{ place.id }})">
+
+              <div class="place-img">
+                {% if place.images %}
+                  <img src="{{ url_for('static', filename='uploads/' + place.images[0].filename) }}" alt="{{ place.name }}">
+                {% else %}
+                  <div class="no-img"></div>
+                {% endif %}
+              </div>
+
+              <div class="place-info">
+                <h3>{{ place.name }}</h3>
+                <p>{{ place.service_type }} · {{ place.area }} · {{ place.opening_hours or 'Not specified' }}</p>
+
+                <div class="features">
+                  {% if place.wifi %}<span title="WiFi">📡</span>{% endif %}
+                  {% if place.printer %}<span title="Printer">🖨️</span>{% endif %}
+                </div>
+
+                <div class="open-now">Open now</div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="empty">No approved places available yet.</p>
+      {% endif %}
+    </aside>
+
+    <main class="map-area">
+      <div id="map"></div>
+
+      <div class="details-panel" id="detailsPanel">
+        <button class="close-details" onclick="closeDetails()">×</button>
+
+        <div class="details-image" id="detailsImage"></div>
+
+        <h2 id="detailsName"></h2>
+        <p id="detailsDescription"></p>
+        <p id="detailsType"></p>
+        <p id="detailsHours"></p>
+        <p id="detailsFeatures"></p>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <script>
+    var map = L.map('map').setView([31.2518, 34.7913], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    var places = [
+      {% for place in places %}
+        {
+          id: {{ place.id }},
+          name: {{ place.name|tojson }},
+          description: {{ (place.description or 'No description')|tojson }},
+          area: {{ place.area|tojson }},
+          service_type: {{ place.service_type|tojson }},
+          opening_hours: {{ (place.opening_hours or 'Not specified')|tojson }},
+          wifi: {{ 'true' if place.wifi else 'false' }},
+          printer: {{ 'true' if place.printer else 'false' }},
+          latitude: {{ place.latitude }},
+          longitude: {{ place.longitude }},
+          image: {% if place.images %}{{ url_for('static', filename='uploads/' + place.images[0].filename)|tojson }}{% else %}null{% endif %}
+        }{% if not loop.last %},{% endif %}
+      {% endfor %}
+    ];
+
+    var markers = {};
+
+    places.forEach(function(place) {
+  var labelIcon = L.divIcon({
+    className: 'simple-place-label',
+    html: '<span>' + place.name.substring(0, 8) + '...</span> <span>📡</span> <span>🖨️</span>',
+    iconSize: null,
+    iconAnchor: [45, 18]
+  });
+
+  var marker = L.marker([place.latitude, place.longitude], {
+    icon: labelIcon
+  }).addTo(map);
+
+  marker.on('click', function() {
+    selectPlace(place.id);
+  });
+
+  markers[place.id] = marker;
+});
+
+    function selectPlace(placeId) {
+      var place = places.find(function(p) {
+        return p.id === placeId;
+      });
+
+      if (!place) return;
+
+      map.setView([place.latitude, place.longitude], 15);
+
+      document.querySelectorAll('.place-card').forEach(function(card) {
+        card.classList.remove('active');
+      });
+
+      var activeCard = document.querySelector('.place-card[data-id="' + placeId + '"]');
+      if (activeCard) {
+        activeCard.classList.add('active');
+        activeCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      document.getElementById('detailsName').textContent = place.name;
+      document.getElementById('detailsDescription').textContent = place.description;
+      document.getElementById('detailsType').textContent = place.service_type + ' · ' + place.area;
+      document.getElementById('detailsHours').textContent = 'Opening Hours: ' + place.opening_hours;
+
+      var features = [];
+      if (place.wifi) features.push('📡 WiFi');
+      if (place.printer) features.push('🖨️ Printer');
+      document.getElementById('detailsFeatures').textContent = features.join(' · ');
+
+      var imageBox = document.getElementById('detailsImage');
+      if (place.image) {
+        imageBox.innerHTML = '<img src="' + place.image + '" alt="' + place.name + '">';
+      } else {
+        imageBox.innerHTML = '';
+      }
+
+      document.getElementById('detailsPanel').classList.add('show');
+    }
+
+    function closeDetails() {
+      document.getElementById('detailsPanel').classList.remove('show');
+    }
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+      filterPlaces();
+    });
+
+    document.querySelectorAll('.category-btn').forEach(function(button) {
+      button.addEventListener('click', function() {
+        document.querySelectorAll('.category-btn').forEach(function(btn) {
+          btn.classList.remove('active');
+        });
+
+        button.classList.add('active');
+        filterPlaces();
+      });
+    });
+
+    function filterPlaces() {
+      var searchValue = document.getElementById('searchInput').value.toLowerCase();
+      var activeType = document.querySelector('.category-btn.active').dataset.type;
+
+      document.querySelectorAll('.place-card').forEach(function(card) {
+        var name = card.dataset.name;
+        var type = card.dataset.type;
+
+        var matchesSearch = name.includes(searchValue);
+        var matchesType = activeType === 'all' || type === activeType;
+
+        if (matchesSearch && matchesType) {
+          card.style.display = 'flex';
+          if (markers[card.dataset.id]) {
+            map.addLayer(markers[card.dataset.id]);
+          }
+        } else {
+          card.style.display = 'none';
+          if (markers[card.dataset.id]) {
+            map.removeLayer(markers[card.dataset.id]);
+          }
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
