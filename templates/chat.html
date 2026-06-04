@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>StudySpot - Chat</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #dfe5e8;
+      min-height: 100vh;
+      padding: 35px;
+      color: #2c3e50;
+    }
+
+    .container {
+      width: 900px;
+      max-width: 100%;
+      margin: auto;
+      background: #ecf0f1;
+      border-radius: 28px;
+      padding: 40px;
+      box-shadow: 0 14px 35px rgba(44, 62, 80, 0.18);
+      border: 1px solid rgba(44, 62, 80, 0.10);
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      gap: 15px;
+    }
+
+    h1 {
+      font-size: 44px;
+      color: #2c3e50;
+    }
+
+    .subtitle {
+      color: #7f8c8d;
+      margin-top: 5px;
+      font-size: 16px;
+    }
+
+    .back-btn {
+      text-decoration: none;
+      background: #2c3e50;
+      color: white;
+      padding: 12px 22px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .chat-box {
+      background: white;
+      border: 1px solid rgba(44, 62, 80, 0.15);
+      border-radius: 20px;
+      padding: 20px;
+      height: 430px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+
+    .message {
+  max-width: 72%;
+  padding: 14px 18px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+  font-size: 15px;
+  position: relative;
+  word-wrap: break-word;
+  animation: fadeIn 0.2s ease;
+}
+
+.sent {
+  background: #5f97d8;
+  color: white;
+  margin-left: auto;
+  border-bottom-right-radius: 6px;
+  box-shadow: 0 6px 14px rgba(95, 151, 216, 0.22);
+}
+
+.received {
+  background: #f4f6f7;
+  color: #2c3e50;
+  margin-right: auto;
+  border-bottom-left-radius: 6px;
+  border: 1px solid rgba(44, 62, 80, 0.08);
+  box-shadow: 0 6px 14px rgba(44, 62, 80, 0.05);
+}
+
+.time {
+  display: block;
+  font-size: 11px;
+  margin-top: 8px;
+  opacity: 0.7;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+    .chat-form {
+      display: flex;
+      gap: 12px;
+    }
+
+    .chat-form input {
+      flex: 1;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid #2c3e50;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .chat-form input:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.18);
+    }
+
+    .chat-form button {
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 0 26px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .chat-form button:hover {
+      background: #2980b9;
+    }
+
+    .empty {
+      text-align: center;
+      color: #7f8c8d;
+      margin-top: 160px;
+      font-size: 17px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="top">
+      <div>
+        <h1>Chat</h1>
+        <p class="subtitle">Conversation about: {{ place.name }}</p>
+      </div>
+
+      {% if current_user.role == 'student' %}
+        <a href="{{ url_for('view_map') }}" class="back-btn">Back to Map</a>
+      {% else %}
+        <a href="{{ url_for('owner_dashboard') }}" class="back-btn">Back</a>
+      {% endif %}
+    </div>
+
+    <div class="chat-box">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="message {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}">
+            {{ message.content }}
+            <span class="time">{{ message.timestamp }}</span>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="empty">No messages yet. Start the conversation.</p>
+      {% endif %}
+    </div>
+
+    <form method="POST" class="chat-form">
+      <input type="text" name="content" placeholder="Write your message..." required>
+      <button type="submit">Send</button>
+    </form>
+
+  </div>
+
+</body>
+</html>

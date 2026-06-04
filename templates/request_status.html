@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StudySpot - My Places</title>
+  <title>StudySpot - Request Status</title>
 
   <style>
     * {
@@ -14,32 +13,32 @@
     }
 
     body {
-      background: #ecf0f1;
+      background: #dfe5e8;
       min-height: 100vh;
       padding: 35px;
       color: #2c3e50;
     }
 
     .container {
-      width: 1100px;
+      width: 1400px;
       max-width: 100%;
       margin: auto;
       background: #ecf0f1;
-      border-radius: 22px;
-      padding: 55px 55px 65px;
+      border-radius: 28px;
+      padding: 55px 65px 70px;
       box-shadow: 0 14px 35px rgba(44, 62, 80, 0.18);
-      border: 1px solid rgba(44, 62, 80, 0.08);
+      border: 1px solid rgba(44, 62, 80, 0.10);
     }
 
     .header {
       position: relative;
       text-align: center;
-      margin-bottom: 55px;
+      margin-bottom: 65px;
     }
 
     h1 {
       color: #2c3e50;
-      font-size: 70px;
+      font-size: 72px;
       line-height: 1;
       margin-bottom: 12px;
       font-weight: 800;
@@ -47,40 +46,20 @@
 
     .subtitle {
       color: #5d6d7e;
-      font-size: 18px;
-    }
-
-    .add-btn {
-      position: absolute;
-      right: 0;
-      top: 70px;
-      text-decoration: none;
-      color: #2c3e50;
-      background: white;
-      border: 1px solid #2c3e50;
-      padding: 11px 22px;
-      border-radius: 25px;
-      font-size: 14px;
-      transition: 0.2s;
-    }
-
-    .add-btn:hover {
-      background: #3498db;
-      color: white;
-      border-color: #3498db;
+      font-size: 20px;
     }
 
     .back-btn {
       position: absolute;
       left: 0;
-      top: 70px;
+      top: 88px;
       text-decoration: none;
       color: #2c3e50;
       background: white;
-      border: 1px solid #2c3e50;
-      padding: 11px 22px;
-      border-radius: 25px;
-      font-size: 14px;
+      border: 2px solid #2c3e50;
+      padding: 12px 30px;
+      border-radius: 999px;
+      font-size: 18px;
       transition: 0.2s;
     }
 
@@ -92,25 +71,25 @@
     .places-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 70px 85px;
+      gap: 55px 85px;
     }
 
     .place-card {
       display: flex;
       align-items: center;
-      gap: 18px;
-      min-height: 145px;
+      gap: 24px;
+      min-height: 220px;
       background: white;
-      border: 1px solid #2c3e50;
-      border-radius: 18px;
-      padding: 10px;
-      box-shadow: 0 4px 12px rgba(44, 62, 80, 0.06);
+      border: 2px solid #2c3e50;
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 8px 20px rgba(44, 62, 80, 0.06);
     }
 
     .place-image {
-      width: 130px;
-      min-width: 130px;
-      height: 125px;
+      width: 170px;
+      min-width: 170px;
+      height: 160px;
       border-radius: 14px;
       background: #d97777;
       overflow: hidden;
@@ -123,73 +102,57 @@
       display: block;
     }
 
+    .no-image {
+      width: 100%;
+      height: 100%;
+      background: #d97777;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: bold;
+      text-align: center;
+      padding: 10px;
+    }
+
     .place-info {
       flex: 1;
       text-align: left;
     }
 
     .place-info h2 {
-      font-size: 21px;
+      font-size: 30px;
       color: #2c3e50;
-      margin-bottom: 6px;
-      font-weight: 700;
-    }
-
-    .rating-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
-      color: #2c3e50;
-    }
-
-    .stars {
-      font-size: 18px;
-      letter-spacing: 1px;
-    }
-
-    .stars .filled {
-      color: #2c3e50;
-    }
-
-    .stars .empty {
-      color: #d5d8dc;
-    }
-
-    .rating-number {
-      font-size: 16px;
-      color: #2c3e50;
-    }
-
-    .rating-count {
-      font-size: 11px;
-      color: #5d6d7e;
+      margin-bottom: 8px;
+      font-weight: 800;
     }
 
     .details {
-      font-size: 14px;
+      font-size: 18px;
       color: #5d6d7e;
-      margin-bottom: 9px;
+      margin-bottom: 18px;
+      line-height: 1.4;
     }
 
     .features {
       display: flex;
-      gap: 18px;
+      gap: 16px;
       align-items: center;
-      margin-bottom: 9px;
-      font-size: 25px;
+      margin-bottom: 18px;
+      font-size: 30px;
       color: #2c3e50;
     }
 
     .status {
       display: inline-block;
-      font-size: 14px;
-      color: #3498db;
-      margin-bottom: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 18px;
     }
 
     .pending {
-      color: #856404;
+      color: #b58b00;
     }
 
     .approved {
@@ -206,65 +169,71 @@
 
     .actions {
       display: flex;
-      gap: 8px;
+      gap: 12px;
       flex-wrap: wrap;
-      margin-top: 4px;
     }
 
     .action-btn {
       display: inline-block;
       text-decoration: none;
-      border-radius: 14px;
-      padding: 6px 12px;
-      font-size: 12px;
+      border-radius: 999px;
+      padding: 10px 24px;
+      font-size: 17px;
       color: white;
       transition: 0.2s;
+      font-weight: bold;
     }
 
     .edit-btn {
       background: #3498db;
     }
 
+    .edit-btn:hover {
+      background: #2980b9;
+    }
+
     .delete-btn {
       background: #e74c3c;
+    }
+
+    .delete-btn:hover {
+      background: #c0392b;
     }
 
     .submit-btn {
       background: #2c3e50;
     }
 
-    .action-btn:hover {
-      opacity: 0.85;
+    .submit-btn:hover {
+      background: #1f2d3a;
     }
 
-    .empty-message {
+    .empty {
       text-align: center;
-      color: #5d6d7e;
-      font-size: 18px;
+      color: #7f8c8d;
+      font-size: 22px;
       margin-top: 40px;
     }
 
-    @media (max-width: 950px) {
+    @media (max-width: 1050px) {
       .places-grid {
         grid-template-columns: 1fr;
       }
 
       h1 {
-        font-size: 50px;
+        font-size: 56px;
       }
 
-      .add-btn,
       .back-btn {
         position: static;
         display: inline-block;
-        margin-top: 18px;
-        margin-inline: 6px;
+        margin-top: 22px;
       }
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 650px) {
       .container {
-        padding: 35px 20px;
+        padding: 35px 22px;
       }
 
       .place-card {
@@ -278,25 +247,20 @@
 
       .place-image {
         width: 100%;
-        height: 170px;
+        height: 190px;
       }
 
-      .rating-row,
       .features,
       .actions {
         justify-content: center;
       }
     }
-    .no-image {
-  width: 100%;
-  height: 100%;
-  background: #d97777;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 15px;
-  font-weight: bold;
+    .chat-btn {
+  background: #2c3e50;
+}
+
+.chat-btn:hover {
+  background: #1f2d3a;
 }
   </style>
 </head>
@@ -307,10 +271,8 @@
     <div class="header">
       <a href="{{ url_for('owner_dashboard') }}" class="back-btn">Back</a>
 
-      <h1>My Places</h1>
-      <p class="subtitle">Here you can view all the places you added.</p>
-
-      <a href="{{ url_for('add_place') }}" class="add-btn">Add a New Place</a>
+      <h1>Request Status</h1>
+      <p class="subtitle">Track the approval status of your submitted places.</p>
     </div>
 
     {% if places %}
@@ -319,12 +281,11 @@
           <div class="place-card">
 
             <div class="place-image">
-  {% if place.images %}
-  <img src="{{ place.images[0].filename }}" alt="{{ place.name }}">
-{% else %}
-  <div class="no-image">No Image</div>
-{% endif %}
-</div>
+              {% if place.images %}
+<img src="{{ place.images[0].filename }}" alt="{{ place.name }}">              {% else %}
+                <div class="no-image">No Image</div>
+              {% endif %}
+            </div>
 
             <div class="place-info">
               <h2>{{ place.name }}</h2>
@@ -335,7 +296,7 @@
 
               <div class="features">
                 {% if place.wifi %}
-                  <span title="WiFi">📶</span>
+                  <span title="WiFi">📡</span>
                 {% endif %}
 
                 {% if place.printer %}
@@ -343,31 +304,35 @@
                 {% endif %}
               </div>
 
-              <span class="status {{ place.status }}">
+              <div class="status {{ place.status }}">
                 {{ place.status.replace('_', ' ').title() }}
-              </span>
+              </div>
 
               <div class="actions">
-                <a href="{{ url_for('edit_place', place_id=place.id) }}" class="action-btn edit-btn">Edit</a>
-
-                <a href="{{ url_for('delete_place', place_id=place.id) }}" class="action-btn delete-btn"
-                   onclick="return confirm('Are you sure you want to delete this place?');">
-                  Delete
-                </a>
-
                 {% if place.status == 'returned_for_edit' %}
-                  <a href="{{ url_for('submit_request', place_id=place.id) }}" class="action-btn submit-btn">
-                    Submit Request
-                  </a>
+                  <a href="{{ url_for('edit_place', place_id=place.id) }}" class="action-btn edit-btn">Edit</a>
+                  <a href="{{ url_for('submit_request', place_id=place.id) }}" class="action-btn submit-btn">Submit Again</a>
+                {% elif place.status == 'rejected' %}
+                  <a href="{{ url_for('edit_place', place_id=place.id) }}" class="action-btn edit-btn">Edit</a>
+                  <a href="{{ url_for('delete_place', place_id=place.id) }}" class="action-btn delete-btn"
+                     onclick="return confirm('Are you sure you want to delete this place?');">Delete</a>
+                {% elif place.status == 'pending' %}
+                  <a href="{{ url_for('edit_place', place_id=place.id) }}" class="action-btn edit-btn">Edit</a>
+                {% else %}
+                  <a href="{{ url_for('my_places') }}" class="action-btn edit-btn">View Place</a>
                 {% endif %}
+                <a href="{{ url_for('chat', place_id=place.id) }}" class="action-btn chat-btn">
+                   Chat with Admin
+                </a>
               </div>
 
             </div>
+
           </div>
         {% endfor %}
       </div>
     {% else %}
-      <p class="empty-message">You have not added any places yet.</p>
+      <p class="empty">You have not submitted any places yet.</p>
     {% endif %}
 
   </div>

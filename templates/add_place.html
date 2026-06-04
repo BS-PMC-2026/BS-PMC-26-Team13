@@ -16,34 +16,37 @@
     }
 
     body {
-      background: #efedf3;
+      background: #ecf0f1;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 20px;
+      color: #2c3e50;
     }
 
     .container {
-      width: 700px;
+      width: 760px;
       max-width: 100%;
-      background: #f8f6fb;
-      border: 1px solid #ddd;
-      border-radius: 20px;
-      padding: 35px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      background: #ecf0f1;
+      border-radius: 22px;
+      padding: 40px;
+      box-shadow: 0 14px 35px rgba(44, 62, 80, 0.18);
+      border: 1px solid rgba(44, 62, 80, 0.08);
     }
 
     h1 {
-      color: #a78bfa;
+      color: #2c3e50;
       margin-bottom: 10px;
-      font-size: 42px;
+      font-size: 46px;
+      text-align: center;
     }
 
     .subtitle {
-      color: #888;
+      color: #7f8c8d;
       margin-bottom: 25px;
       font-size: 16px;
+      text-align: center;
     }
 
     label {
@@ -52,15 +55,25 @@
       margin-top: 14px;
       font-weight: bold;
       font-size: 14px;
+      color: #2c3e50;
     }
 
     input, textarea, select {
       width: 100%;
-      padding: 12px 14px;
+      padding: 13px 14px;
       border-radius: 12px;
-      border: 1px solid #ddd;
+      border: 1px solid #2c3e50;
       font-size: 15px;
       background: white;
+      color: #2c3e50;
+      outline: none;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.18);
     }
 
     textarea {
@@ -86,28 +99,31 @@
     }
 
     .btn {
-      width: 100%;
+      width: 60%;
+      display: block;
       padding: 14px;
-      margin-top: 22px;
-      background: #b49bf2;
+      margin: 25px auto 0;
+      background: #3498db;
       color: white;
       border: none;
-      border-radius: 14px;
-      font-size: 18px;
+      border-radius: 10px;
+      font-size: 17px;
       cursor: pointer;
+      transition: 0.2s;
     }
 
     .btn:hover {
-      background: #9f7df0;
+      background: #2980b9;
     }
 
     .flash-message {
-      background: #ffe0e0;
-      color: #900;
+      background: #fcebea;
+      color: #e74c3c;
       padding: 10px;
       border-radius: 10px;
       margin-bottom: 15px;
       font-size: 14px;
+      border: 1px solid rgba(231, 76, 60, 0.3);
     }
 
     #map {
@@ -115,13 +131,48 @@
       height: 350px;
       border-radius: 14px;
       margin-top: 10px;
-      border: 1px solid #ddd;
+      border: 2px solid #2c3e50;
+      overflow: hidden;
     }
 
     .map-note {
       margin-top: 8px;
       font-size: 14px;
-      color: #666;
+      color: #7f8c8d;
+    }
+
+    .upload-box {
+      background: white;
+      border: 2px dashed #3498db;
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .upload-box input {
+      border: none;
+      padding: 10px;
+      background: transparent;
+    }
+
+    .upload-note {
+      font-size: 13px;
+      color: #7f8c8d;
+      margin-top: 8px;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 18px;
+      color: #2c3e50;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .back-link:hover {
+      color: #3498db;
     }
   </style>
 </head>
@@ -139,7 +190,8 @@
       {% endif %}
     {% endwith %}
 
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
+
       <label>Place Name</label>
       <input type="text" name="name" required>
 
@@ -161,6 +213,11 @@
       <label>Opening Hours</label>
       <input type="text" name="opening_hours" placeholder="08:00 - 22:00">
 
+      <label>Place Images</label>
+      <div class="upload-box">
+<input type="url" name="image_url" placeholder="Paste image URL from Google" required>
+<p class="upload-note">Paste one image URL for your place.</p>      </div>
+
       <label>Select Place on Map</label>
       <div id="map"></div>
       <p class="map-note">Click on the map to choose the place location in Beersheba.</p>
@@ -178,11 +235,12 @@
 
       <button type="submit" class="btn">Add Place</button>
     </form>
+
+    <a href="{{ url_for('owner_dashboard') }}" class="back-link">Back to Dashboard</a>
   </div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    // خريطة متمركزة على بئر السبع
     var map = L.map('map').setView([31.2518, 34.7913], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

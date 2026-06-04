@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>StudySpot - All Places</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #dfe5e8;
+      min-height: 100vh;
+      padding: 35px;
+      color: #2c3e50;
+    }
+
+    .container {
+      width: 1400px;
+      max-width: 100%;
+      margin: auto;
+      background: #ecf0f1;
+      border-radius: 28px;
+      padding: 55px 65px 70px;
+      box-shadow: 0 14px 35px rgba(44, 62, 80, 0.18);
+      border: 1px solid rgba(44, 62, 80, 0.10);
+    }
+
+    .header {
+      position: relative;
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    h1 {
+      font-size: 72px;
+      color: #2c3e50;
+      line-height: 1;
+      margin-bottom: 12px;
+      font-weight: 800;
+    }
+
+    .subtitle {
+      color: #5d6d7e;
+      font-size: 20px;
+    }
+
+    .back-btn {
+      position: absolute;
+      left: 0;
+      top: 70px;
+      text-decoration: none;
+      color: #2c3e50;
+      background: white;
+      border: 2px solid #2c3e50;
+      padding: 12px 30px;
+      border-radius: 999px;
+      font-size: 18px;
+      transition: 0.2s;
+    }
+
+    .back-btn:hover {
+      background: #2c3e50;
+      color: white;
+    }
+
+    .places-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 45px 70px;
+    }
+
+    .place-card {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      min-height: 220px;
+      background: white;
+      border: 2px solid #2c3e50;
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 8px 20px rgba(44, 62, 80, 0.06);
+    }
+
+    .place-image {
+      width: 170px;
+      min-width: 170px;
+      height: 160px;
+      border-radius: 14px;
+      background: #d97777;
+      overflow: hidden;
+    }
+
+    .place-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .no-image {
+      width: 100%;
+      height: 100%;
+      background: #d97777;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+    }
+
+    .place-info {
+      flex: 1;
+    }
+
+    .place-info h2 {
+      font-size: 30px;
+      color: #2c3e50;
+      margin-bottom: 8px;
+      font-weight: 800;
+    }
+
+    .details {
+      font-size: 18px;
+      color: #5d6d7e;
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+
+    .status {
+      display: inline-block;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 18px;
+      padding: 7px 14px;
+      border-radius: 999px;
+    }
+
+    .pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .approved {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .rejected {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .returned_for_edit {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+
+    .chat-btn {
+      display: inline-block;
+      text-decoration: none;
+      background: #3498db;
+      color: white;
+      padding: 11px 24px;
+      border-radius: 999px;
+      font-size: 17px;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    .chat-btn:hover {
+      background: #2980b9;
+    }
+
+    .empty {
+      text-align: center;
+      color: #7f8c8d;
+      font-size: 22px;
+      margin-top: 40px;
+    }
+
+    @media (max-width: 1050px) {
+      .places-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .back-btn {
+        position: static;
+        display: inline-block;
+        margin-top: 25px;
+      }
+
+      h1 {
+        font-size: 54px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="header">
+      <a href="{{ url_for('admin_dashboard') }}" class="back-btn">Back</a>
+      <h1>All Places</h1>
+      <p class="subtitle">View all submitted places and contact place owners.</p>
+    </div>
+
+    {% if places %}
+      <div class="places-grid">
+        {% for place in places %}
+          <div class="place-card">
+
+            <div class="place-image">
+              {% if place.images %}
+<img src="{{ place.images[0].filename }}" alt="{{ place.name }}">                <div class="no-image">No Image</div>
+              {% endif %}
+            </div>
+
+            <div class="place-info">
+              <h2>{{ place.name }}</h2>
+
+              <p class="details">
+                {{ place.service_type }} · {{ place.area }} · {{ place.opening_hours or 'Not specified' }}
+              </p>
+
+              <span class="status {{ place.status }}">
+                {{ place.status.replace('_', ' ').title() }}
+              </span>
+
+              <br>
+
+              <a href="{{ url_for('chat', place_id=place.id) }}" class="chat-btn">
+                Chat with Owner
+              </a>
+            </div>
+
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty">No places available yet.</p>
+    {% endif %}
+
+  </div>
+
+</body>
+</html>
