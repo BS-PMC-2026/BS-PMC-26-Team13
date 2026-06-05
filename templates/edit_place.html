@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>StudySpot - Edit Place</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #efedf3;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 700px;
+      max-width: 100%;
+      background: #f8f6fb;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      padding: 35px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    }
+
+    h1 {
+      color: #a78bfa;
+      margin-bottom: 10px;
+      font-size: 42px;
+    }
+
+    .subtitle {
+      color: #888;
+      margin-bottom: 25px;
+      font-size: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      margin-top: 14px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      font-size: 15px;
+      background: white;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    #map {
+      width: 100%;
+      height: 350px;
+      border-radius: 14px;
+      margin-top: 10px;
+      border: 1px solid #ddd;
+    }
+
+    .checkbox-row {
+      display: flex;
+      gap: 20px;
+      margin-top: 15px;
+      margin-bottom: 10px;
+    }
+
+    .checkbox-row input {
+      width: auto;
+      margin-right: 6px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      margin-top: 22px;
+      background: #b49bf2;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #9f7df0;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 15px;
+      color: #6c63ff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Edit Place</h1>
+    <p class="subtitle">Update your place details and send it again for approval.</p>
+
+    <form method="POST">
+      <label>Place Name</label>
+      <input type="text" name="name" value="{{ place.name }}" required>
+
+      <label>Description</label>
+      <textarea name="description">{{ place.description }}</textarea>
+
+      <label>Area</label>
+      <input type="text" name="area" value="{{ place.area }}" required>
+
+      <label>Service Type</label>
+      <select name="service_type" required>
+        <option value="Library" {% if place.service_type == 'Library' %}selected{% endif %}>Library</option>
+        <option value="Cafe" {% if place.service_type == 'Cafe' %}selected{% endif %}>Cafe</option>
+        <option value="Study Room" {% if place.service_type == 'Study Room' %}selected{% endif %}>Study Room</option>
+        <option value="Work Space" {% if place.service_type == 'Work Space' %}selected{% endif %}>Work Space</option>
+      </select>
+
+      <label>Opening Hours</label>
+      <input type="text" name="opening_hours" value="{{ place.opening_hours }}">
+
+      <label>Update Location on Map</label>
+      <div id="map"></div>
+
+      <label>Latitude</label>
+      <input type="number" step="any" name="latitude" id="latitude" value="{{ place.latitude }}" readonly required>
+
+      <label>Longitude</label>
+      <input type="number" step="any" name="longitude" id="longitude" value="{{ place.longitude }}" readonly required>
+
+      <div class="checkbox-row">
+        <label><input type="checkbox" name="wifi" {% if place.wifi %}checked{% endif %}> WiFi</label>
+        <label><input type="checkbox" name="printer" {% if place.printer %}checked{% endif %}> Printer</label>
+      </div>
+
+      <button type="submit" class="btn">Save Changes</button>
+    </form>
+
+    <a href="{{ url_for('my_places') }}" class="back-link">Back to My Places</a>
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    var currentLat = {{ place.latitude }};
+    var currentLng = {{ place.longitude }};
+
+    var map = L.map('map').setView([currentLat, currentLng], 14);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    var marker = L.marker([currentLat, currentLng]).addTo(map);
+
+    map.on('click', function(e) {
+      var lat = e.latlng.lat;
+      var lng = e.latlng.lng;
+
+      document.getElementById('latitude').value = lat.toFixed(6);
+      document.getElementById('longitude').value = lng.toFixed(6);
+
+      if (marker) {
+        map.removeLayer(marker);
+      }
+
+      marker = L.marker([lat, lng]).addTo(map);
+    });
+  </script>
+
+</body>
+</html>
