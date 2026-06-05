@@ -129,6 +129,35 @@ def login():
 
     return render_template('login.html')
 
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+
+        user = User.query.filter_by(email=email).first()
+
+        if not user:
+            flash('No account found with this email.', 'danger')
+            return redirect(url_for('forgot_password'))
+
+        if new_password != confirm_password:
+            flash('Passwords do not match.', 'danger')
+            return redirect(url_for('forgot_password'))
+
+        if len(new_password) < 6:
+            flash('Password must be at least 6 characters.', 'danger')
+            return redirect(url_for('forgot_password'))
+
+        user.password_hash = generate_password_hash(new_password)
+        db.session.commit()
+
+        flash('Password updated successfully. Please sign in.', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('forgot_password.html')
+
 
 # =========================
 # Student Pages
