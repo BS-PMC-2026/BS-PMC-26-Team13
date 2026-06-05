@@ -2,12 +2,11 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-<<<<<<< HEAD
+
 import urllib.parse
-=======
+
 import os
 from werkzeug.utils import secure_filename
->>>>>>> d40787a (Changed image handling to use URLs)
 from models import db, User, Place, PlaceImage, Message, Rating
 
 app = Flask(__name__)
