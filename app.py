@@ -1,4 +1,4 @@
-
+import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,22 +8,24 @@ from models import db, User, Place, PlaceImage, Message, Rating
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mysecretkey'
 
-password = "StudySpot@2026Team13"
+if os.environ.get("TESTING") == "1":
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+else:
+    password = "StudySpot@2026Team13"
 
-connection_string = (
-    "DRIVER={ODBC Driver 18 for SQL Server};"
-    "SERVER=studyspot-team13-sql.database.windows.net;"
-    "DATABASE=studyspotdb;"
-    "UID=studyspotadmin;"
-    f"PWD={password};"
-    "Encrypt=yes;"
-    "TrustServerCertificate=yes;"
-    "Connection Timeout=60;"
-)
+    connection_string = (
+        "DRIVER={ODBC Driver 18 for SQL Server};"
+        "SERVER=studyspot-team13-sql.database.windows.net;"
+        "DATABASE=studyspotdb;"
+        "UID=studyspotadmin;"
+        f"PWD={password};"
+        "Encrypt=yes;"
+        "TrustServerCertificate=yes;"
+        "Connection Timeout=60;"
+    )
 
-params = urllib.parse.quote_plus(connection_string)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = f"mssql+pyodbc:///?odbc_connect={params}"
+    params = urllib.parse.quote_plus(connection_string)
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"mssql+pyodbc:///?odbc_connect={params}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
