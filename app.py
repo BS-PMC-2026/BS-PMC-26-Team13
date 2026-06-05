@@ -2,15 +2,29 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-import os
-from werkzeug.utils import secure_filename
-from models import db, User, Place, PlaceImage
+import urllib.parse
+from models import db, User, Place, PlaceImage, Message, Rating
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mysecretkey'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///study_services.db'
+
+password = "StudySpot@2026Team13"
+
+connection_string = (
+    "DRIVER={ODBC Driver 18 for SQL Server};"
+    "SERVER=studyspot-team13-sql.database.windows.net;"
+    "DATABASE=studyspotdb;"
+    "UID=studyspotadmin;"
+    f"PWD={password};"
+    "Encrypt=yes;"
+    "TrustServerCertificate=yes;"
+    "Connection Timeout=60;"
+)
+
+params = urllib.parse.quote_plus(connection_string)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f"mssql+pyodbc:///?odbc_connect={params}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 db.init_app(app)
 
@@ -51,6 +65,7 @@ def create_admin():
 @app.route('/')
 def home():
     return redirect(url_for('register'))
+
 
 # =========================
 # Unified Register
@@ -102,7 +117,7 @@ def login():
             login_user(user)
 
             if user.role == 'student':
-                return redirect(url_for('student_dashboard'))
+                return redirect(url_for('view_map'))
 
             if user.role == 'owner':
                 return redirect(url_for('owner_dashboard'))
@@ -170,6 +185,40 @@ def view_map():
     )
 
 
+@app.route('/rate_place/<int:place_id>', methods=['POST'])
+@login_required
+def rate_place(place_id):
+    if current_user.role != 'student':
+        flash('Only students can rate places.')
+        return redirect(url_for('home'))
+
+    place = Place.query.get_or_404(place_id)
+
+    score = int(request.form['score'])
+    comment = request.form['comment']
+
+    existing_rating = Rating.query.filter_by(
+        student_id=current_user.id,
+        place_id=place.id
+    ).first()
+
+    if existing_rating:
+        existing_rating.score = score
+        existing_rating.comment = comment
+    else:
+        new_rating = Rating(
+            student_id=current_user.id,
+            place_id=place.id,
+            score=score,
+            comment=comment
+        )
+        db.session.add(new_rating)
+
+    db.session.commit()
+
+    return redirect(url_for('view_map'))
+
+
 # =========================
 # Owner Pages
 # =========================
@@ -219,22 +268,14 @@ def add_place():
         db.session.add(new_place)
         db.session.commit()
 
-        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        image_url = request.form.get('image_url')
 
-        images = request.files.getlist('images')
-
-        for image in images:
-            if image and image.filename != '':
-                filename = secure_filename(image.filename)
-                image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                image.save(image_path)
-
-                place_image = PlaceImage(
-                    filename=filename,
-                    place_id=new_place.id
-                )
-
-                db.session.add(place_image)
+        if image_url and image_url.strip():
+            place_image = PlaceImage(
+                filename=image_url.strip(),
+                place_id=new_place.id
+            )
+            db.session.add(place_image)
 
         db.session.commit()
 
@@ -252,7 +293,6 @@ def my_places():
 
     places = Place.query.filter_by(owner_id=current_user.id).all()
     return render_template('my_places.html', places=places)
-
 
 
 @app.route('/edit_place/<int:place_id>', methods=['GET', 'POST'])
@@ -279,6 +319,17 @@ def edit_place(place_id):
         place.wifi = True if request.form.get('wifi') == 'on' else False
         place.printer = True if request.form.get('printer') == 'on' else False
         place.status = 'pending'
+
+        image_url = request.form.get('image_url')
+        if image_url and image_url.strip():
+            if place.images:
+                place.images[0].filename = image_url.strip()
+            else:
+                place_image = PlaceImage(
+                    filename=image_url.strip(),
+                    place_id=place.id
+                )
+                db.session.add(place_image)
 
         db.session.commit()
         return redirect(url_for('my_places'))
@@ -335,6 +386,18 @@ def request_status():
     return render_template('request_status.html', places=places)
 
 
+@app.route('/view_ratings')
+@login_required
+def view_ratings():
+    if current_user.role != 'owner':
+        flash('Unauthorized access.')
+        return redirect(url_for('home'))
+
+    places = Place.query.filter_by(owner_id=current_user.id).all()
+
+    return render_template('view_ratings.html', places=places)
+
+
 # =========================
 # Admin Pages
 # =========================
@@ -357,6 +420,17 @@ def admin_requests():
 
     pending_places = Place.query.filter_by(status='pending').all()
     return render_template('admin_requests.html', places=pending_places)
+
+
+@app.route('/admin_all_places')
+@login_required
+def admin_all_places():
+    if current_user.role != 'admin':
+        flash('Unauthorized access.')
+        return redirect(url_for('home'))
+
+    places = Place.query.all()
+    return render_template('admin_all_places.html', places=places)
 
 
 @app.route('/approve_place/<int:place_id>')
@@ -401,6 +475,98 @@ def return_place(place_id):
     return redirect(url_for('admin_requests'))
 
 
+@app.route('/chat/<int:place_id>', methods=['GET', 'POST'])
+@login_required
+def chat(place_id):
+    place = Place.query.get_or_404(place_id)
+
+    if current_user.role == 'owner':
+        if place.owner_id != current_user.id:
+            flash('Unauthorized access.')
+            return redirect(url_for('owner_dashboard'))
+
+        admin = User.query.filter_by(role='admin').first()
+
+        if not admin:
+            flash('Admin user does not exist.')
+            return redirect(url_for('owner_dashboard'))
+
+        receiver_id = admin.id
+
+    elif current_user.role == 'admin':
+        receiver_id = place.owner_id
+
+    else:
+        flash('Unauthorized access.')
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        content = request.form['content']
+
+        if content.strip():
+            new_message = Message(
+                sender_id=current_user.id,
+                receiver_id=receiver_id,
+                place_id=place.id,
+                content=content
+            )
+
+            db.session.add(new_message)
+            db.session.commit()
+
+        return redirect(url_for('chat', place_id=place.id))
+
+    messages = Message.query.filter(
+        Message.place_id == place.id,
+        (
+            ((Message.sender_id == current_user.id) & (Message.receiver_id == receiver_id)) |
+            ((Message.sender_id == receiver_id) & (Message.receiver_id == current_user.id))
+        )
+    ).order_by(Message.timestamp.asc()).all()
+
+    return render_template(
+        'chat.html',
+        place=place,
+        messages=messages
+    )
+
+
+@app.route('/admin_users')
+@login_required
+def admin_users():
+    if current_user.role != 'admin':
+        flash('Unauthorized access.')
+        return redirect(url_for('home'))
+
+    users = User.query.all()
+
+    return render_template('admin_users.html', users=users)
+
+
+@app.route('/delete_user/<int:user_id>')
+@login_required
+def delete_user(user_id):
+    if current_user.role != 'admin':
+        flash('Unauthorized access.')
+        return redirect(url_for('home'))
+
+    user = User.query.get_or_404(user_id)
+
+    if user.role == 'admin':
+        return redirect(url_for('admin_users'))
+
+    if user.role == 'owner':
+        places = Place.query.filter_by(owner_id=user.id).all()
+
+        for place in places:
+            db.session.delete(place)
+
+    db.session.delete(user)
+    db.session.commit()
+
+    return redirect(url_for('admin_users'))
+
+
 # =========================
 # Logout
 # =========================
@@ -408,9 +574,8 @@ def return_place(place_id):
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('home'))
+    return redirect(url_for('register'))
 
 
 if __name__ == '__main__':
     app.run(debug=True)
-
