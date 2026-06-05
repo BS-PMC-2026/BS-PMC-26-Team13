@@ -169,11 +169,11 @@
         <p class="subtitle">Conversation about: {{ place.name }}</p>
       </div>
 
-      {% if current_user.role == 'student' %}
-        <a href="{{ url_for('view_map') }}" class="back-btn">Back to Map</a>
-      {% else %}
-        <a href="{{ url_for('owner_dashboard') }}" class="back-btn">Back</a>
-      {% endif %}
+      {% if current_user.role == 'admin' %}
+       <a href="{{ url_for('admin_all_places') }}" class="back-btn">Back</a>
+    {% else %}
+  <a href="{{ url_for('request_status') }}" class="back-btn">Back</a>
+{% endif %}
     </div>
 
     <div class="chat-box">
