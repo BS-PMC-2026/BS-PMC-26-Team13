@@ -516,6 +516,7 @@
         <p id="detailsType"></p>
         <p id="detailsHours"></p>
         <p id="detailsFeatures"></p>
+        <div id="detailsRatings"></div>
         <form id="ratingForm" method="POST">
 
     <select name="score" required
@@ -593,10 +594,19 @@ var places = [
       latitude: {{ place.latitude }},
       longitude: {{ place.longitude }},
       images: [
-        {% for image in place.images %}
-          {{ image.filename|tojson }}{% if not loop.last %},{% endif %}
-        {% endfor %}
-      ]
+  {% for image in place.images %}
+    {{ image.filename|tojson }}{% if not loop.last %},{% endif %}
+  {% endfor %}
+],
+ratings: [
+  {% for rating in place.ratings %}
+    {
+      score: {{ rating.score }},
+      comment: {{ (rating.comment or '')|tojson }},
+      student: {{ rating.student.username|tojson }}
+    }{% if not loop.last %},{% endif %}
+  {% endfor %}
+]
     }{% if not loop.last %},{% endif %}
   {% endfor %}
 ];
@@ -681,6 +691,29 @@ function prevImage() {
       if (place.wifi) features.push('📡 WiFi');
       if (place.printer) features.push('🖨️ Printer');
       document.getElementById('detailsFeatures').textContent = features.join(' · ');
+      var ratingsBox = document.getElementById('detailsRatings');
+
+if (!place.ratings || place.ratings.length === 0) {
+  ratingsBox.innerHTML = '<p style="color:#7f8c8d;">No ratings yet.</p>';
+} else {
+  ratingsBox.innerHTML =
+    '<h3 style="margin:14px 0 8px; color:#2c3e50;">Ratings</h3>' +
+    place.ratings.map(function(rating) {
+      return `
+        <div style="
+          background:#f4f6f7;
+          border:1px solid rgba(44,62,80,0.12);
+          border-radius:12px;
+          padding:10px;
+          margin-bottom:8px;
+        ">
+          <strong>${rating.student}</strong>
+          <div>${'⭐'.repeat(rating.score)}</div>
+          <p style="margin:6px 0 0; color:#5d6d7e;">${rating.comment}</p>
+        </div>
+      `;
+    }).join('');
+}
       document.getElementById('ratingForm').action =
       '/rate_place/' + place.id;
 
