@@ -393,11 +393,14 @@ def delete_place(place_id):
         flash('You can delete only your own places.')
         return redirect(url_for('my_places'))
 
+    Message.query.filter_by(place_id=place.id).delete()
+    Rating.query.filter_by(place_id=place.id).delete()
+    PlaceImage.query.filter_by(place_id=place.id).delete()
+
     db.session.delete(place)
     db.session.commit()
 
     return redirect(url_for('my_places'))
-
 
 @app.route('/submit_request/<int:place_id>')
 @login_required
