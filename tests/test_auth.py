@@ -4,18 +4,24 @@ from werkzeug.security import check_password_hash
 
 
 # Tests that load_user returns the correct user when a valid ID exists.
-def test_load_user_existing():
-    user = load_user(1)
+from app import app
 
-    assert user is not None
-    assert user.email == "admin@gmail.com"
+
+# Tests that load_user returns the correct user when a valid ID exists.
+def test_load_user_existing():
+    with app.app_context():
+        user = load_user(1)
+
+        assert user is not None
+        assert user.email == "admin@gmail.com"
 
 
 # Tests that load_user returns None when the user ID does not exist.
 def test_load_user_not_existing():
-    user = load_user(999)
+    with app.app_context():
+        user = load_user(999)
 
-    assert user is None
+        assert user is None
 
 
 # Tests that the home route redirects users to the registration page.
