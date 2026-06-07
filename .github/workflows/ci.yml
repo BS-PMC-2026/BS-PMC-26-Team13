@@ -2,14 +2,7 @@ name: StudySpot CI
 
 on:
   push:
-    branches:
-      - marwa-feature
-      - BSPMT13-143-Hackaton-Improve-Home-Page-Design
-      - sprint2-admin-requests
-
   pull_request:
-    branches:
-      - marwa-feature
 
 jobs:
   build:
