@@ -208,7 +208,15 @@ def view_map():
             'wifi': 'Yes' if place.wifi else 'No',
             'printer': 'Yes' if place.printer else 'No',
             'latitude': place.latitude,
-            'longitude': place.longitude
+            'longitude': place.longitude,
+            'ratings': [
+              {
+                'score': rating.score,
+                'comment': rating.comment or '',
+                'student': rating.student.username
+             }
+            for rating in place.ratings
+            ]
         })
 
     return render_template(
