@@ -188,17 +188,6 @@ def test_login_unknown_email(client):
     assert response.status_code == 302
     assert "/login" in response.location
 
-# Tests that login fails when the email does not exist in the system.
-def test_login_unknown_email(client):
-    response = client.post(
-        "/login",
-        data={
-            "email": "unknown@gmail.com",
-            "password": "1234"
-        }
-    )
-
-    assert response.status_code == 200
 
 
 # Tests that password reset fails when the email is not found.
