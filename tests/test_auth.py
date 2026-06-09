@@ -2,8 +2,6 @@ from models import User
 from app import db, load_user
 from werkzeug.security import check_password_hash
 
-
-# Tests that load_user returns the correct user when a valid ID exists.
 from app import app
 
 
@@ -169,11 +167,26 @@ def test_login_wrong_password(client):
         data={
             "email": "student@gmail.com",
             "password": "wrongpassword"
-        }
+        },
+        follow_redirects=False
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 302
+    assert "/login" in response.location
 
+
+def test_login_unknown_email(client):
+    response = client.post(
+        "/login",
+        data={
+            "email": "unknown@gmail.com",
+            "password": "1234"
+        },
+        follow_redirects=False
+    )
+
+    assert response.status_code == 302
+    assert "/login" in response.location
 
 # Tests that login fails when the email does not exist in the system.
 def test_login_unknown_email(client):
