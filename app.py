@@ -117,21 +117,30 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
-        user = User.query.filter_by(email=email).first()
+        try:
+            user = User.query.filter_by(email=email).first()
+        except Exception:
+            flash('Database connection error. Please try again later.')
+            return redirect(url_for('login'))
 
-        if user and check_password_hash(user.password_hash, password):
-            login_user(user)
+        if not user:
+            flash('Email does not exist.')
+            return redirect(url_for('login'))
 
-            if user.role == 'student':
-                return redirect(url_for('view_map'))
+        if not check_password_hash(user.password_hash, password):
+            flash('Invalid password.')
+            return redirect(url_for('login'))
 
-            if user.role == 'owner':
-                return redirect(url_for('owner_dashboard'))
+        login_user(user)
 
-            if user.role == 'admin':
-                return redirect(url_for('admin_dashboard'))
+        if user.role == 'student':
+            return redirect(url_for('view_map'))
 
-        flash('Invalid email or password.')
+        if user.role == 'owner':
+            return redirect(url_for('owner_dashboard'))
+
+        if user.role == 'admin':
+            return redirect(url_for('admin_dashboard'))
 
     return render_template('login.html')
 
